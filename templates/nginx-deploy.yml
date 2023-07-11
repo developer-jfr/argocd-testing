@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.nginx.deploy_name }}
+  labels:
+    {{- include "nginx.labels" . | indent 2 }}
+spec:
+  replicas:  {{ .Values.nginx.replicas }}
+  selector:
+    matchLabels:
+   {{- include "nginx.selector"  . | indent 2 }}
+  template:
+    metadata:
+      labels:
+     {{- include "nginx.template_labels" . | indent 4 }}
+    spec:
+      containers:
+      - name:  {{ .Values.nginx.container_name }}
+        image: "{{ .Values.nginx.image }}:{{ .Values.nginx.image_tag }}"
+        ports:
+        - containerPort: {{ .Values.nginx.container_port }}  
+        resources:
+          requests:
+          {{- toYaml .Values.nginx.resources.requests | nindent 12 }}   
+          limits:
+          {{- toYaml .Values.nginx.resources.limits | nindent 12 }}  
+        volumeMounts:
+        {{- toYaml .Values.nginx.volumeMounts | nindent 8 }} 
+      volumes:
+      {{- toYaml .Values.nginx.volumes | nindent 6 }} 

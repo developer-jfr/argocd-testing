@@ -1,0 +1,110 @@
+bitbucket:
+  deploy_name: bitbucket
+  replicas: 1
+  container_name: nginx
+  image: nginx
+  image_tag: 1.14.2
+  container_port: 80
+  # Probes
+  probes:
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 80
+      initialDelaySeconds: 15
+      periodSeconds: 15
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 80
+      initialDelaySeconds: 5
+      periodSeconds: 5
+  # Resources
+  resources:
+    requests:
+      memory: "350Mi"
+      cpu: "250m" 
+    limits:
+      memory: "350Mi"
+      cpu: "250m" 
+  
+  # env
+  envFrom: 
+    - secretRef:
+        name: vault-secret
+
+  volumes:  
+  - name: data 
+
+  volumeMounts:  
+  - name: data
+    mountPath: /usr/share/ideco/repo-manager/utm
+  
+nginx:
+  deploy_name: nginx
+  replicas: 1
+  container_name: nginx
+  image: nginx
+  image_tag: 1.14.2
+  container_port: 80
+  # Resources
+  resources:
+    requests:
+      memory: "350Mi"
+      cpu: "250m" 
+    limits:
+      memory: "350Mi"
+      cpu: "250m" 
+  
+  # env
+  envFrom: 
+    - secretRef:
+        name: vault-secret
+
+  volumes:  
+  - name: data 
+
+  volumeMounts:  
+  - name: data
+    mountPath: /usr/share/ideco/repo-manager/utm
+
+stateful_set:
+  stateful_name: statefulset
+  serviceName: statefulsetsa
+  replicas: 1
+  container_name: nginx
+  image: nginx
+  image_tag: 1.14.2
+  container_port: 80
+  volumeMounts:
+  - mountPath: "/var/www/html"
+    name: stateful-app-mount
+  - mountPath: /data/s3-dynamic
+    name: csi-s3-pvc
+    readOnly: true
+  volumes:
+  - name: stateful-app-mount
+    persistentVolumeClaim:
+      claimName: stateful-set-app
+  - name: csi-s3-pvc
+    persistentVolumeClaim:
+      claimName: csi-s3-pvc
+
+
+pvc:
+  name: stateful-set-app
+  accessModes:  
+    - ReadWriteOnce
+  storageClassName: yc-network-hdd
+  resources:
+    requests:
+      storage: 64Gi
+
+pvc_s3:
+  name: csi-s3-pvc
+  accessModes:  
+    - ReadWriteMany
+  storageClassName: csi-s3
+  resources:
+    requests:
+      storage: 1Gi

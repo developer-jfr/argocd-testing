@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.stateful_set.stateful_name }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "stateful_set.selector"  . | indent 2 }}
+  serviceName: {{ .Values.stateful_set.serviceName }}
+  replicas: {{ .Values.stateful_set.replicas }}
+  template:
+    metadata:
+      labels:
+        {{- include "stateful_set.labels"  . | indent 6 }}
+    spec:
+      containers:
+        - name: {{ .Values.stateful_set.container_name }}
+          image: {{ .Values.stateful_set.image }}:{{ .Values.stateful_set.image_tag }}
+          ports:
+            - containerPort: {{ .Values.stateful_set.container_port }}
+          volumeMounts:
+          {{- toYaml .Values.stateful_set.volumeMounts | nindent 10 }} 
+      volumes:
+        {{- toYaml .Values.stateful_set.volumes | nindent 6 }}

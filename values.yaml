@@ -3,7 +3,7 @@ bitbucket:
   replicas: 1
   container_name: nginx
   image: nginx
-  image_tag: stable
+  image_tag: mainline-perl
   container_port: 80
   # Probes
   probes:

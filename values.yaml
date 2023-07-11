@@ -44,8 +44,8 @@ nginx:
   deploy_name: nginx
   replicas: 1
   container_name: nginx
-  image: mainline-perl
-  image_tag: 1.14.2
+  image: nginx
+  image_tag: mainline-perl
   container_port: 80
   # Resources
   resources:
